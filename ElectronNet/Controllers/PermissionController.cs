@@ -13,7 +13,6 @@ namespace ElectronNet.Controllers
         {
             var response = await CommonHelper.HttpClient.GetAsync(CommonHelper.ServerUrl + "/v1/Permission/ListPermissions");
             string json = await response.Content.ReadAsStringAsync();
-            QueryString
             return View();
         }
     }
