@@ -1,4 +1,4 @@
-﻿
+﻿@model ResultModel
 @{
     ViewData["Title"] = "权限列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,31 +12,29 @@
         <cite>权限项管理</cite>
     </a>
 </span>
-<div class="layui-container">
-    <div class="layui-row">
-        <div class="layui-col-md12" style="margin-top:20px;"></div>
-        <div class="layui-col-md12" style="text-align: center;">
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <button class="layui-btn layui-btn-radius" id="perSearchBtn">查询</button>
-                    <div class="layui-input-inline" style="width: 250px;">
-                        <input type="text" placeholder="请输入权限名称" class="layui-input" id="perName" style="width:250px" />
-                    </div>
+
+<section class="layui-larry-box">
+    <div class="layui-tab">
+        <blockquote class="layui-elem-quote news_search">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input placeholder="请输入权限名称" class="layui-input search_input" type="text">
                 </div>
+                <a class="layui-btn search_btn">查询</a>
             </div>
-            <table class="layui-table" lay-data="{height: 'full-200', cellMinWidth: 80, page: true, limit:30, url:'/demo/table/user/'}">
-                <thead>
-                    <tr>
-                        <th lay-data="{type:'checkbox'}">id</th>
-                        <th lay-data="{field:'name', width:100}">名称</th>
-                        <th lay-data="{field:'description', width:100}">描述</th>
-                        <th lay-data="{fixed: 'right', width:178, align:'center', toolbar: '#perBar'}"></th>
-                    </tr>
-                </thead>
-            </table>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-normal newsAdd_btn">添加权限</a>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-danger batchDel">批量删除</a>
+            </div>
+        </blockquote>
+        <div class="ayui-tab-content">
+            <table class="layui-table" id="dataTable"></table>
         </div>
     </div>
-</div>
+</section>
+
 <script type="text/html" id="perBar">
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
@@ -49,11 +47,38 @@
             var element = layui.element;
         });
 
-        layui.use('table', function () {
+        layui.use(["table", "layer"], function () {
             var table = layui.table;
-            
+            var layer = layui.layer;
+
+            if ("@Model.Status" != "200") {
+                layer.open({
+                    content: "@Model.Message",
+                    offset: "auto",
+                    btnAlign: "c"
+                });
+                return false;
+            }
+
             table.render({
-                data: data
+                elem: '#dataTable',
+                data: [
+                    { "name": "Admin.List", "description": "描述", "id": 1 },
+                    { "name": "Admin.Add", "description": "描述", "id": 2 },
+                    { "name": "Admin.Edit", "description": "描述", "id": 3 }
+                ],
+                page: {
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
+                    groups: 3,
+                    first: true,
+                    last: true
+                },
+                cols: [[
+                    { fixed:"center", type: "checkbox" },
+                    { fixed: "center",field: 'name', width: 100, title: '名称' },
+                    { fixed: "center", field: 'description', width: 100, title: '描述' },
+                    { fixed: "right", align: 'center', toolbar: '#perBar', width: 178, title: '操作' }
+                ]]
             });
 
             // //监听表格复选框选择

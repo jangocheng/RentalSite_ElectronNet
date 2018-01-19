@@ -64,15 +64,5 @@ namespace ElectronNet.Controllers
 
             return Content(value, "application/json", Encoding.UTF8);
         }
-
-        /// <summary>
-        /// 系统错误页面
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult Error()
-        {
-            return View();
-        }
     }
 }

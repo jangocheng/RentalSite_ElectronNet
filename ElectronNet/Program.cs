@@ -22,6 +22,7 @@ namespace ElectronNet
             WebHost.CreateDefaultBuilder(args)
                 .UseElectron(args)
                 .UseStartup<Startup>()
+                .UseUrls("http://*:5002")
                 .Build();
     }
 }

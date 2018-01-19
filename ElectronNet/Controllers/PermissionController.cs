@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using ElectronNet.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +13,10 @@ namespace ElectronNet.Controllers
     {
         public async Task<IActionResult> ListPermissions()
         {
-            var response = await CommonHelper.HttpClient.GetAsync(CommonHelper.ServerUrl + "/v1/Permission/ListPermissions");
-            string json = await response.Content.ReadAsStringAsync();
-            return View();
+            //ResultModel res = await CommonHelper.GetAsync<ResultModel>("", "/v1/Permission/ListPermissions");
+            ResultModel res = new ResultModel();
+            res.Status = 200;
+            return View(res);
         }
     }
 }
