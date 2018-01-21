@@ -43,26 +43,26 @@ namespace ElectronNet
 
             app.UseStaticFiles();
             app.UseExceptionless("3zFPfqmQz23px7CLdgmQfCh3VqG2aX9eN6NPgdCk");
+            app.UseMiddleware(typeof(HttpMiddleware));
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}");
             });
 
             Task.Run(async () =>
             {
                 var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
                 {
-                    Width = 1152,
-                    Height = 864,
                     Show = true,
                     Center = true,
-                    Transparent = true,
                     Title = "租客"
                 });
                 browserWindow.OnReadyToShow += () => browserWindow.Show();
+                browserWindow.SetTitle("租客");
+                Electron.App.SetName("租客");
             });
         }
     }

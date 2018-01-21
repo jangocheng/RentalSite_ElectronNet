@@ -20,13 +20,13 @@
                 <div class="layui-input-inline">
                     <input placeholder="请输入权限名称" class="layui-input search_input" type="text">
                 </div>
-                <a class="layui-btn search_btn">查询</a>
+                <a class="layui-btn search_btn"><i class="layui-icon">&#xe615;</i>查询</a>
             </div>
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-normal newsAdd_btn">添加权限</a>
+                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加权限</a>
             </div>
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-danger batchDel">批量删除</a>
+                <a class="layui-btn layui-btn-danger batchDel"><i class="layui-icon">&#xe640;</i>批量删除</a>
             </div>
         </blockquote>
         <div class="ayui-tab-content">
@@ -42,7 +42,7 @@
 </script>
 
 @section Scripts{
-    <script type="text/javascript">
+<script type="text/javascript">
         layui.use('element', function () {
             var element = layui.element;
         });
@@ -60,24 +60,24 @@
                 return false;
             }
 
+            let json = JSON.parse("@Model.Data");
+
             table.render({
                 elem: '#dataTable',
-                data: [
-                    { "name": "Admin.List", "description": "描述", "id": 1 },
-                    { "name": "Admin.Add", "description": "描述", "id": 2 },
-                    { "name": "Admin.Edit", "description": "描述", "id": 3 }
-                ],
+                height: "full-127",
+                data: json.data,
                 page: {
                     layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
                     groups: 3,
                     first: true,
-                    last: true
+                    last: true,
+                    count: parseInt(json.count)
                 },
                 cols: [[
                     { fixed:"center", type: "checkbox" },
-                    { fixed: "center",field: 'name', width: 100, title: '名称' },
-                    { fixed: "center", field: 'description', width: 100, title: '描述' },
-                    { fixed: "right", align: 'center', toolbar: '#perBar', width: 178, title: '操作' }
+                    { fixed: "center",field: 'name', title: '名称' },
+                    { fixed: "center", field: 'description', title: '描述' },
+                    { fixed: "right", align: 'center', toolbar: '#perBar', title: '操作' }
                 ]]
             });
 
@@ -123,5 +123,5 @@
             //     active[type] ? active[type].call(this) : '';
             // });
         });
-    </script>
+</script>
 }

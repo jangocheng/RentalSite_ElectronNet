@@ -55,7 +55,6 @@ namespace ElectronNet.Controllers
             var values = new List<KeyValuePair<string, string>>();
             values.Add(new KeyValuePair<string, string>("phoneNumber", phoneNum));
             values.Add(new KeyValuePair<string, string>("password", password));
-
             FormUrlEncodedContent content = new FormUrlEncodedContent(values);
             HttpResponseMessage response = await CommonHelper.HttpClient.PostAsync(CommonHelper.ServerUrl + "/v1/Home/Login", content);
             string value = await response.Content.ReadAsStringAsync();

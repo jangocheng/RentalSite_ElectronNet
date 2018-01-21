@@ -20,9 +20,8 @@ namespace ElectronNet
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseElectron(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://*:5002")
+                .UseElectron(args)
                 .Build();
     }
 }

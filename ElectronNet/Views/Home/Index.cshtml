@@ -1,125 +1,109 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>租客</title>
-    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="/layui/css/layui.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="/build/css/app.css" rel="stylesheet" />
 </head>
-<body class="layui-layout-body">
-    <div class="layui-layout layui-layout-admin">
+<body>
+    <div class="layui-layout layui-layout-admin kit-layout-admin">
         <div class="layui-header">
             <div class="layui-logo">租客后台管理</div>
-            <ul class="layui-nav layui-layout-right">
+            <div class="layui-logo kit-logo-mobile">租客</div>
+            <ul class="layui-nav layui-layout-right kit-nav">
                 <li class="layui-nav-item">
-                    <a>
-                        <img src="http://t.cn/RCzsdCq" class="layui-nav-img"> 贤心
+                    <a href="javascript:;">
+                        <img src="http://m.zhengjinfan.cn/images/0.jpg" class="layui-nav-img"> Van
                     </a>
                     <dl class="layui-nav-child">
-                        <dd>
-                            <a href="">基本资料</a>
-                        </dd>
-                        <dd>
-                            <a href="">安全设置</a>
-                        </dd>
+                        <dd><a href="javascript:;">基本资料</a></dd>
+                        <dd><a href="javascript:;">安全设置</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a>退出</a>
+                    <a>
+                        <i class="fa fa-sign-out" aria-hidden="true"></i> 注销
+                    </a>
                 </li>
             </ul>
         </div>
-        <div class="layui-side layui-bg-black">
+
+        <div class="layui-side layui-bg-black kit-side">
             <div class="layui-side-scroll">
+                <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-                <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                    <li class="layui-nav-item layui-nav-itemed">
-                        <a class="menuGroup">权限管理</a>
+                <ul class="layui-nav layui-nav-tree" lay-filter="kitNavbar" kit-navbar>
+                    <li class="layui-nav-item">
+                        <a>
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                            <span> 权限管理</span>
+                        </a>
                         <dl class="layui-nav-child">
                             <dd>
-                                <a data-type="tabAdd" data-url="/Permission/ListPermissions" data-id="listPermissions">权限项管理</a>
+                                <a data-url="/Permission/ListPermissions" data-icon="fa-lock" data-title="权限项管理" kit-target data-id="1">
+                                    <i class="fa fa-lock" aria-hidden="true"></i>
+                                    <span> 权限项管理</span>
+                                </a>
                             </dd>
                             <dd>
-                                <a>角色管理</a>
+                                <a data-url="/Role/ListRoles" data-icon="fa-user-circle" data-title="角色管理" kit-target data-id="2">
+                                    <i class="fa fa-user-circle" aria-hidden="true"></i>
+                                    <span> 角色管理</span>
+                                </a>
                             </dd>
                             <dd>
-                                <a>操作员管理</a>
+                                <a data-url="/AdminUser/ListAdminUsers" data-icon="fa-user" data-title="操作员管理" kit-target data-id="3">
+                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                    <span> 操作员管理</span>
+                                </a>
                             </dd>
                         </dl>
                     </li>
-                    <li class="layui-nav-item layui-nav-itemed">
-                        <a class="menuGroup">房源管理</a>
+                    <li class="layui-nav-item">
+                        <a>
+                            <i class="fa fa-home" aria-hidden="true"></i>
+                            <span> 房源管理</span>
+                        </a>
                         <dl class="layui-nav-child">
                             <dd>
-                                <a>整租</a>
-                            </dd>
-                            <dd>
-                                <a>合租</a>
-                            </dd>
-                            <dd>
-                                <a>房屋预约</a>
+                                <a data-url="/AdminUser/ListAdminUsers" data-icon="fa-user" data-title="整租" kit-target data-id="4">
+                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                    <span> 整租</span>
+                                </a>
                             </dd>
                         </dl>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="layui-body">
-            <!-- 选项卡 -->
-            <div class="layui-tab" lay-filter="tabDiv" lay-allowclose="true">
-                <ul class="layui-tab-title"></ul>
-                <div class="layui-tab-content"></div>
-            </div>
+        <div class="layui-body" id="container">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;">主体内容加载中,请稍等...</div>
+        </div>
+
+        <div class="layui-footer">
+            <!-- 底部固定区域 -->
+            2018 &copy;租客/MIT license
         </div>
     </div>
-    <script src="~/layui/layui.js"></script>
-    <script type="text/javascript">
-        layui.use('element', function () {
-            let $ = layui.jquery, element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
-            let active = {
-                tabAdd: function (name, id, url) {
-                    //新增一个Tab项
-                    element.tabAdd('tabDiv', {
-                        title: name,
-                        content: '<iframe data-frameid="' + id + '" frameborder="0" name="content" scrolling="no" height="100%" width="100%" src="' + url + '"></iframe>',
-                        id: id
-                    });
-                },
-                tabChange: function (id) {
-                    //切换到指定Tab项
-                    element.tabChange('tabDiv', id); //切换到：用户管理
-                    $("iframe[data-frameid='" + id + "']").attr("src", $("iframe[data-frameid='" + id + "']").attr("src"))//切换后刷新框架
-                },
-                tabDelete: function (id) {
-                    element.tabDelete("tabDiv", id);//删除
-                },
-                tabDeleteAll: function (ids) {
-                    //删除所有
-                    $.each(ids, function (i, item) {
-                        element.tabDelete("tabDiv", item);
-                    });
-                }
-            };
-
-            //结合菜单展示内容
-            $(".layui-side-scroll a[class!=menuGroup]").click(function () {
-                let dataid = $(this);
-                if ($(".layui-tab-title li[lay-id]").length <= 0) {
-                    active.tabAdd(dataid.text(), dataid.attr("data-id"), dataid.attr("data-url"));
-                }
-                else {
-                    let isData = false;
-                    $.each($(".layui-tab-title li[lay-id]"), function () {
-                        if ($(this).attr("lay-id") == dataid.attr("data-id")) {
-                            isData = true;
-                        }
-                    });
-
-                    if (isData == false) {
-                        active.tabAdd(dataid.text(), dataid.attr("data-id"), dataid.attr("data-url"));
-                    }
-                }
-                active.tabChange(dataid.attr("data-id"));
-            });
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script>if (typeof module === 'object') { window.jQuery = window.$ = module.exports; };</script>
+    <script src="/layui/layui.js"></script>
+    <script>
+        var message;
+        layui.config({
+            base: '/build/js/'
+        }).use(['app', 'message'], function () {
+            var app = layui.app,
+                $ = layui.jquery,
+                layer = layui.layer;
+            //主入口
+            app.set({
+                type: 'iframe'
+            }).init();
         });
     </script>
 </body>

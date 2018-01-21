@@ -26,10 +26,6 @@ namespace ElectronNet
                 UseProxy = false
             }, false);
             HttpClient.DefaultRequestHeaders.Add("AccessToken", TokenHeader());
-
-            IConfigurationBuilder configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
-            IConfigurationRoot configRoot = configuration.Build();
-            ServerUrl = configRoot.GetSection("ServerUrl").Value;
         }
 
         /// <summary>
@@ -40,7 +36,7 @@ namespace ElectronNet
         /// <summary>
         /// 服务器地址
         /// </summary>
-        public static string ServerUrl { get; private set; }
+        public static string ServerUrl { get; } = "http://localhost:5000";
 
         /// <summary>
         /// JWT密钥
