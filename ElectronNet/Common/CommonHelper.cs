@@ -2,8 +2,8 @@
 using JWT.Algorithms;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ElectronNet
@@ -42,6 +43,24 @@ namespace ElectronNet
         /// JWT密钥
         /// </summary>
         public static string Secret => "{107C5AEF-6B1F-4BE5-A47F-B20994CF1288@$$%__}";
+
+        /// <summary>
+        /// 获取模型验证的错误信息
+        /// </summary>
+        /// <param name="modelState">ModelStateDictionary对象</param>
+        /// <returns>错误信息</returns>
+        public static string GetValidMsg(ModelStateDictionary modelState)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var ms in modelState.Values)
+            {
+                foreach (var modelError in ms.Errors)
+                {
+                    sb.AppendLine(modelError.ErrorMessage);
+                }
+            }
+            return sb.ToString();
+        }
 
         /// <summary>
         /// 生成AccessToken

@@ -63,5 +63,23 @@ namespace ElectronNet.Controllers
 
             return Content(value, "application/json", Encoding.UTF8);
         }
+
+        /// <summary>
+        /// 404页面
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult NotFoundView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 500页面
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ErrorView()
+        {
+            return View();
+        }
     }
 }
