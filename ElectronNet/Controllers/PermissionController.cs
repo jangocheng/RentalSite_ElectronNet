@@ -42,10 +42,15 @@ namespace ElectronNet.Controllers
         /// </summary>
         /// <param name="id">数据Id</param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> EditPermission(long id)
         {
             ResultModel model = await CommonHelper.GetAsync<ResultModel>("?id=" + id, "/v1/Permission/GetPermissionById");
-            if (model.Status != 200)
+            if (model.Status == (int)HttpStatusCode.InternalServerError)
+            {
+                return Redirect("/Home/ErrorView");
+            }
+            else if (model.Status == (int)HttpStatusCode.Forbidden)
             {
 
             }

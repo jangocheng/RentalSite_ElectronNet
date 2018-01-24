@@ -2,6 +2,7 @@
 using JWT.Algorithms;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace ElectronNet
 {
-    public class CommonHelper
+    public static class CommonHelper
     {
         static CommonHelper()
         {
@@ -45,22 +46,9 @@ namespace ElectronNet
         public static string Secret => "{107C5AEF-6B1F-4BE5-A47F-B20994CF1288@$$%__}";
 
         /// <summary>
-        /// 获取模型验证的错误信息
+        /// JsonSerializerSettings对象
         /// </summary>
-        /// <param name="modelState">ModelStateDictionary对象</param>
-        /// <returns>错误信息</returns>
-        public static string GetValidMsg(ModelStateDictionary modelState)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (var ms in modelState.Values)
-            {
-                foreach (var modelError in ms.Errors)
-                {
-                    sb.AppendLine(modelError.ErrorMessage);
-                }
-            }
-            return sb.ToString();
-        }
+        public static JsonSerializerSettings JsonSerializerSettings { get; } = JsonSerializerSettingsProvider.CreateSerializerSettings();
 
         /// <summary>
         /// 生成AccessToken
@@ -95,6 +83,8 @@ namespace ElectronNet
 
             return token;
         }
+
+        #region HttpClient封装
 
         /// <summary>
         /// 发送Http Get请求
@@ -461,6 +451,18 @@ namespace ElectronNet
             HttpResponseMessage httpResponseMessage = await HttpClient.DeleteAsync($"{ServerUrl}{virtualRoute}{queryString.ToString()}");
             string json = await httpResponseMessage.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 判断是否为Ajax请求
+        /// </summary>
+        /// <param name="httpContext">HttpContext上下文对象</param>
+        /// <returns>是否为Ajax请求</returns>
+        public static bool IsAjax(this HttpContext httpContext)
+        {
+            return !string.IsNullOrEmpty(httpContext.Request.Headers["X-Requested-With"].FirstOrDefault());
         }
     }
 }

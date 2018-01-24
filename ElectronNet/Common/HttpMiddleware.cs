@@ -1,9 +1,13 @@
-﻿using Exceptionless;
+﻿using ElectronNet.Models;
+using Exceptionless;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+
 
 namespace ElectronNet
 {
@@ -25,11 +29,34 @@ namespace ElectronNet
             try
             {
                 await _requestDelegate(httpContext);
+                //判断结果是否为404
+                if (httpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    if (httpContext.IsAjax())
+                    {
+                        httpContext.Response.ContentType = "application/json";
+                        await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(new ResultModel(404, "地址错误！", null), CommonHelper.JsonSerializerSettings));
+                    }
+                    else
+                    {
+                        httpContext.Response.Redirect("/Home/NotFoundView");
+                    }
+                }
             }
             catch (Exception exception)
             {
-                //管道异常处理
+                //提交日志
                 exception.ToExceptionless().Submit();
+                //判断是否为Ajax
+                if (httpContext.IsAjax())
+                {
+                    httpContext.Response.ContentType = "application/json";
+                    await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(new ResultModel(500, "程序出错！", null), CommonHelper.JsonSerializerSettings));
+                }
+                else
+                {
+                    httpContext.Response.Redirect("/Home/ErrorView");
+                }
             }
         }
     }
