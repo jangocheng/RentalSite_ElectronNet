@@ -25,7 +25,10 @@ namespace ElectronNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ExceptionFilter());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,7 +41,7 @@ namespace ElectronNet
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/ErrorView");
             }
 
             app.UseStaticFiles();

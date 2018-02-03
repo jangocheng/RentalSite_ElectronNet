@@ -13,11 +13,11 @@ namespace ElectronNet
 {
     public class HttpMiddleware
     {
-        private readonly RequestDelegate _requestDelegate;
+        private readonly RequestDelegate _next;
 
         public HttpMiddleware(RequestDelegate requestDelegate)
         {
-            _requestDelegate = requestDelegate;
+            _next = requestDelegate;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ElectronNet
         {
             try
             {
-                await _requestDelegate(httpContext);
+                await _next(httpContext);
                 //判断结果是否为404
                 if (httpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
                 {

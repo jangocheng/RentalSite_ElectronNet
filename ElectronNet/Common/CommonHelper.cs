@@ -56,22 +56,22 @@ namespace ElectronNet
         /// <returns>AccessToken字符串</returns>
         public static string TokenHeader()
         {
-            MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-            bool res = cache.TryGetValue("adminUserId", out long adminUserId);
-            if (!res)
-            {
-                return null;
-            }
+            //MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            //bool res = cache.TryGetValue("adminUserId", out long adminUserId);
+            //if (!res)
+            //{
+            //    return null;
+            //}
 
             Dictionary<string, string> dictionary = new Dictionary<string, string>
             {
                 {
                     "adminUserId",
-                    adminUserId.ToString()
+                    "1"//adminUserId.ToString()
                 },
                 {
-                    "GUID",Guid.
-                    NewGuid().ToString()
+                    "UUID",
+                    Guid.NewGuid().ToString()
                 }
             };
 

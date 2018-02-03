@@ -52,15 +52,17 @@ namespace ElectronNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string phoneNum, string password)
         {
-            var values = new List<KeyValuePair<string, string>>();
-            values.Add(new KeyValuePair<string, string>("phoneNumber", phoneNum));
-            values.Add(new KeyValuePair<string, string>("password", password));
+            List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("phoneNumber", phoneNum),
+                new KeyValuePair<string, string>("password", password)
+            };
+
             FormUrlEncodedContent content = new FormUrlEncodedContent(values);
-            HttpResponseMessage response = await CommonHelper.HttpClient.PostAsync(CommonHelper.ServerUrl + "/v1/Home/Login", content);
-            string value = await response.Content.ReadAsStringAsync();
+            string value = await CommonHelper.PostAsync(content, "/v1/Home/Login");
             ResultModel model = JsonConvert.DeserializeObject<ResultModel>(value);
             _cache.Set("adminUserId", model.Data);
-
+            Response.StatusCode = model.Status;
             return Content(value, "application/json", Encoding.UTF8);
         }
 

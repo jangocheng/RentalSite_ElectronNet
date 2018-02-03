@@ -10,6 +10,12 @@ namespace ElectronNet
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            //判断是否为ajax请求
+            if (context.HttpContext.IsAjax())
+            {
+                return;
+            }
+
 
         }
 
