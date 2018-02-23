@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using ElectronNet.Models;
+﻿using ElectronNet.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using static ElectronNet.CommonHelper;
 
 namespace ElectronNet.Controllers
@@ -26,6 +23,7 @@ namespace ElectronNet.Controllers
         public async Task<IActionResult> ListPermissions()
         {
             string res = await GetAsync("", "/v1/Permission/ListPermissions");
+            Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(res).Status;
             return View((object)res);
         }
 
@@ -101,6 +99,27 @@ namespace ElectronNet.Controllers
         public async Task<IActionResult> DeletePermission(long id)
         {
             string json = await DeleteAsync("?id=" + id, "/v1/Permission/DeletePermission");
+            Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
+            return Content(json, "application/json", Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="ids">Id数组</param>
+        /// <returns>服务器返回内容</returns>
+        [HttpDelete]
+        public async Task<IActionResult> BatchDeletePermissions(string idStr)
+        {
+            int[] idArr = JsonConvert.DeserializeObject<int[]>(idStr);
+            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+            foreach (var id in idArr)
+            {
+                list.Add(new KeyValuePair<string, string>("idArr", id.ToString()));
+            }
+
+            QueryString query = QueryString.Create(list);
+            string json = await DeleteAsync(query, "/v1/Permission/BatchDeletePermission");
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
             return Content(json, "application/json", Encoding.UTF8);
         }

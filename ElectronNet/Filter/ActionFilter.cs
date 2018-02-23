@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ElectronNet.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Net;
 
 namespace ElectronNet
 {
@@ -16,12 +15,27 @@ namespace ElectronNet
                 return;
             }
 
+            //判断响应码是否为200
+            if (context.HttpContext.Response.StatusCode == 200)
+            {
+                return;
+            }
 
+            //判断Result是否可以转换为ViewResult
+            if (context.Result is ViewResult viewResult && context.HttpContext.Response.StatusCode == (int)HttpStatusCode.InternalServerError)
+            {
+                ResultModel result = (ResultModel)viewResult.Model;
+                viewResult.ViewData.Model = result.Message;
+                viewResult.ViewName = "/Home/PromptView";
+                viewResult.StatusCode = result.Status;
+                context.HttpContext.Response.StatusCode = result.Status;
+                context.Result = viewResult;
+            }
         }
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            
+
         }
     }
 }

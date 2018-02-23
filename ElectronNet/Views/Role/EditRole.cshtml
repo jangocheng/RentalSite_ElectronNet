@@ -1,6 +1,6 @@
-﻿@model Permission
+﻿@model Role
 @{
-    ViewData["Title"] = "编辑权限项";
+    ViewData["Title"] = "编辑角色";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,18 +8,21 @@
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
         <legend>权限项</legend>
     </fieldset>
-    <form class="layui-form layui-form-pane" method="put" id="permissionAddFrom" action="/Permission/AddPermission">
+    <form class="layui-form layui-form-pane" method="put" id="roleEditFrom" action="/Role/EditRole">
         <input asp-for="Id" type="hidden" />
         <div class="layui-form-item">
-            <label class="layui-form-label">权限名称</label>
+            <label class="layui-form-label">角色名称</label>
             <div class="layui-input-block">
                 <input asp-for="Name" type="text" autocomplete="off" placeholder="请输入权限名称" class="layui-input" lay-verify="name">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label">权限描述</label>
+            <label class="layui-form-label">权限项</label>
             <div class="layui-input-block">
-                <textarea asp-for="Description" placeholder="请输入权限描述" class="layui-textarea" lay-verify="description"></textarea>
+                @foreach (Permission per in Model.AllPermissions)
+                {
+                    <input type="checkbox" name="perIds" title="@per.Name" value="@per.Id" lay-skin="primary" checked="@Model.Permissions.Any(p => p.Id == per.Id)" />
+                }
             </div>
         </div>
         <div class="layui-form-item">
@@ -43,14 +46,6 @@
                     if (value.length < 2) {
                         return '权限名称最少两个字符！';
                     }
-                },
-                description: function (value) {
-                    if (value.length > 255) {
-                        return '权限描述不得超过255个字符！';
-                    }
-                    if (value.length < 2) {
-                        return '权限描述最少两个字符！';
-                    }
                 }
             });
 
@@ -58,7 +53,7 @@
                 let params = data.field;
                 $.ajax({
                     type: "put",
-                    url: "/Permission/EditPermission",
+                    url: "/Role/EditRole",
                     data: params,
                     success: function (res) {
                         parent.parent.layer.alert('编辑成功。', {

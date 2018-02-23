@@ -55,12 +55,13 @@
 
             layform.on('submit(submitBtn)', function (data) {
                 let params = data.field;
+                console.log(params);
                 $.ajax({
                     type: "post",
                     url: "/Permission/AddPermission",
                     data: params,
                     success: function (res) {
-                        layer.alert('添加成功。', {
+                        parent.parent.layer.alert('添加成功。', {
                             icon: 1,
                             skin: 'layer-ext-moon'
                         });
@@ -71,7 +72,7 @@
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
                         let responseText = JSON.parse(XMLHttpRequest.responseText);
-                        layer.alert(responseText.message, {
+                        parent.parent.layer.alert(responseText.message, {
                             icon: 2,
                             skin: 'layer-ext-moon'
                         });

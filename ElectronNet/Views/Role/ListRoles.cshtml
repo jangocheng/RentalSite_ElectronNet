@@ -1,6 +1,6 @@
-﻿@model string
+﻿
 @{
-    ViewData["Title"] = "权限列表";
+    ViewData["Title"] = "角色列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,7 +9,7 @@
     <a>首页</a>
     <a>权限管理</a>
     <a>
-        <cite>权限项管理</cite>
+        <cite>角色管理</cite>
     </a>
 </span>
 
@@ -17,7 +17,7 @@
     <div class="layui-tab">
         <blockquote class="layui-elem-quote news_search">
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加权限</a>
+                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加角色</a>
             </div>
             <div class="layui-inline">
                 <a class="layui-btn layui-btn-danger batchDel"><i class="layui-icon">&#xe640;</i>批量删除</a>
@@ -27,7 +27,7 @@
     </div>
 </section>
 
-<script type="text/html" id="perBar">
+<script type="text/html" id="roleBar">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -56,9 +56,8 @@
                 limit: json.data.length,
                 cols: [[
                     { fixed: "left", type: "checkbox" },
-                    { field: 'name', title: '名称', align: 'center' },
-                    { field: 'description', title: '描述', align: 'center' },
-                    { fixed: "right", align: 'center', toolbar: '#perBar', title: '操作' }
+                    { field: 'name', title: '角色名称', align: 'center' },
+                    { fixed: "right", align: 'center', toolbar: '#roleBar', title: '操作' }
                 ]]
             });
 
@@ -69,7 +68,7 @@
                     parent.layer.confirm('真的删除吗？', function (index) {
                         parent.layer.close(index);
                         $.ajax({
-                            url: "/Permission/DeletePermission",
+                            url: "/Role/DeleteRole",
                             type: "DELETE",
                             data: { id: data.id },
                             success: function (res) {
@@ -94,8 +93,8 @@
                         type: 2,
                         area: ['700px', '450px'],
                         maxmin: true,
-                        content: '/Permission/EditPermission?id=' + data.id,
-                        id: 'EditPermission',
+                        content: '/Role/EditRole?id=' + data.id,
+                        id: 'EditRole',
                         title: '编辑权限项'
                     });
                 }
@@ -106,8 +105,8 @@
                     type: 2,
                     area: ['700px', '450px'],
                     maxmin: true,
-                    content: '/Permission/AddPermission',
-                    id: 'AddPermission',
+                    content: '/Role/AddRole',
+                    id: 'AddRole',
                     title: '添加权限项'
                 });
             });
@@ -121,7 +120,7 @@
                 }
 
                 $.ajax({
-                    url: '/Permission/BatchDeletePermissions',
+                    url: '/Role/BatchDeleteRoles',
                     type: 'delete',
                     data: { idStr: JSON.stringify(idArr)},
                     success: function (res) {

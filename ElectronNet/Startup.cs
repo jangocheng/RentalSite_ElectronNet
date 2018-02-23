@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ElectronNET.API;
+﻿using ElectronNET.API;
 using ElectronNET.API.Entities;
 using Exceptionless;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace ElectronNet
 {
@@ -28,6 +25,7 @@ namespace ElectronNet
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ExceptionFilter());
+                options.Filters.Add(new ActionFilter());
             });
         }
 

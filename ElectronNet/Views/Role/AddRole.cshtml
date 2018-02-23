@@ -1,6 +1,6 @@
-﻿@model Permission
+﻿@model Permission[]
 @{
-    ViewData["Title"] = "编辑权限项";
+    ViewData["Title"] = "添加角色";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,18 +8,20 @@
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
         <legend>权限项</legend>
     </fieldset>
-    <form class="layui-form layui-form-pane" method="put" id="permissionAddFrom" action="/Permission/AddPermission">
-        <input asp-for="Id" type="hidden" />
+    <form class="layui-form layui-form-pane" method="post" id="roleAddFrom" action="/Role/AddRole">
         <div class="layui-form-item">
-            <label class="layui-form-label">权限名称</label>
+            <label class="layui-form-label">角色名称</label>
             <div class="layui-input-block">
-                <input asp-for="Name" type="text" autocomplete="off" placeholder="请输入权限名称" class="layui-input" lay-verify="name">
+                <input type="text" name="name" autocomplete="off" placeholder="请输入角色名称" class="layui-input" lay-verify="name">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label">权限描述</label>
+            <label class="layui-form-label">权限项</label>
             <div class="layui-input-block">
-                <textarea asp-for="Description" placeholder="请输入权限描述" class="layui-textarea" lay-verify="description"></textarea>
+                @foreach (var per in Model)
+                {
+                    <input type="checkbox" name="perIds" value="@per.Id" title="@per.Name" lay-skin="primary" />
+                }
             </div>
         </div>
         <div class="layui-form-item">
@@ -38,30 +40,23 @@
             layform.verify({
                 name: function (value) {
                     if (value.length > 255) {
-                        return '权限名称不得超过255个字符！';
+                        return '角色名称不得超过250个字符！';
                     }
                     if (value.length < 2) {
-                        return '权限名称最少两个字符！';
-                    }
-                },
-                description: function (value) {
-                    if (value.length > 255) {
-                        return '权限描述不得超过255个字符！';
-                    }
-                    if (value.length < 2) {
-                        return '权限描述最少两个字符！';
+                        return '角色名称最少两个字符！';
                     }
                 }
             });
 
             layform.on('submit(submitBtn)', function (data) {
                 let params = data.field;
+                console.log(params);
                 $.ajax({
-                    type: "put",
-                    url: "/Permission/EditPermission",
+                    type: "post",
+                    url: "/Role/AddRole",
                     data: params,
                     success: function (res) {
-                        parent.parent.layer.alert('编辑成功。', {
+                        parent.parent.layer.alert('添加成功。', {
                             icon: 1,
                             skin: 'layer-ext-moon'
                         });

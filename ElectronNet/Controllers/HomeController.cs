@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using ElectronNet.Models;
+﻿using ElectronNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ElectronNet.Controllers
 {
@@ -80,6 +78,15 @@ namespace ElectronNet.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult ErrorView()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 提示页面
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult PromptView()
         {
             return View();
         }
