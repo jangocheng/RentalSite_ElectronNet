@@ -134,8 +134,8 @@ namespace ElectronNet.Controllers
                 //文件上传至又拍云中
                 UpYun upYun = new UpYun
                 {
-                    Operator = "rentalsite",
-                    Password = "tianxin070221203"
+                    Operator = "",
+                    Password = ""
                 };
 
                 byte[] fileByteArr = StreamToBytes(headImg.OpenReadStream());  //Stream转换byte[]
@@ -221,8 +221,8 @@ namespace ElectronNet.Controllers
                 //文件上传至又拍云中
                 UpYun upYun = new UpYun
                 {
-                    Operator = "rentalsite",
-                    Password = "tianxin070221203"
+                    Operator = "",
+                    Password = ""
                 };
 
                 byte[] fileByteArr = StreamToBytes(headImg.OpenReadStream());  //Stream转换byte[]
