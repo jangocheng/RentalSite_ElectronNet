@@ -1,0 +1,40 @@
+﻿{
+  "Home": {
+    "Login": "/v1/Home/Login",
+    "Logout": "/v1/Home/Logout"
+  },
+  "Permission": {
+    "ListPermissions": "/v1/Permission/ListPermissions",
+    "GetPermissionById": "/v1/Permission/GetPermissionById",
+    "AddPermission": "/v1/Permission/AddPermission",
+    "EditPermission": "/v1/Permission/EditPermission",
+    "DeletePermission": "/v1/Permission/DeletePermission",
+    "BatchDeletePermission": "/v1/Permission/BatchDeletePermission"
+  },
+  "Role": {
+    "ListRoles": "/v1/Role/ListRoles",
+    "AddRole": "/v1/Role/AddRole",
+    "EditRole": "/v1/Role/EditRole",
+    "GetRoleById": "/v1/Role/GetRoleById",
+    "DeleteRole": "/v1/Role/DeleteRole",
+    "BatchDeleteRole": "/v1/Role/BatchDeleteRole",
+    "GetByAdminUserId": "/v1/Role/GetByAdminUserId"
+  },
+  "AdminUser": {
+    "ListAdminUsers": "/v1/AdminUser/ListAdminUsers",
+    "AddAdminUser": "/v1/AdminUser/AddAdminUser",
+    "EditAdminUser": "/v1/AdminUser/EditAdminUser",
+    "DeleteAdminUser": "/v1/AdminUser/DeleteAdminUser",
+    "BatchDeleteAdminUser": "/v1/AdminUser/BatchDeleteAdminUser",
+    "GetAdminUserById": "/v1/AdminUser/GetAdminUserById",
+    "Search": "/v1/AdminUser/GetAdminUserByPhoneOrName",
+    "GetHeadImgUrlById": "/v1/AdminUser/GetHeadImgUrlById"
+  },
+  "City": {
+    "ListCities": "/v1/City/ListCities",
+    "AddCity": "/v1/City/AddCity",
+    "EditCity": "/v1/City/EditCity",
+    "DeleteCity": "/v1/City/DeleteCity",
+    "BatchDeleteCity": "/v1/City/BatchDeleteCity"
+  }
+}

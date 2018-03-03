@@ -16,6 +16,12 @@
     <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="apisettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="electron.manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

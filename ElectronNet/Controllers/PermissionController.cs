@@ -1,6 +1,8 @@
-﻿using ElectronNet.Models;
+﻿using ElectronNet.ApiSettings;
+using ElectronNet.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -15,6 +17,13 @@ namespace ElectronNet.Controllers
     /// </summary>
     public class PermissionController : Controller
     {
+        private readonly FirstVersion _urlSettings;
+
+        public PermissionController(IOptions<FirstVersion> options)
+        {
+            _urlSettings = options.Value;
+        }
+
         /// <summary>
         /// 权限列表
         /// </summary>
@@ -22,7 +31,7 @@ namespace ElectronNet.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPermissions()
         {
-            string res = await GetAsync("", "/v1/Permission/ListPermissions");
+            string res = await GetAsync("", _urlSettings.Permission.ListPermissions);
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(res).Status;
             return View((object)res);
         }
@@ -45,12 +54,12 @@ namespace ElectronNet.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPermission(long id)
         {
-            ResultModel model = await GetAsync<ResultModel>("?id=" + id, "/v1/Permission/GetPermissionById");
+            ResultModel model = await GetAsync<ResultModel>("?id=" + id, _urlSettings.Permission.GetPermissionById);
             if (model.Status != 200)
             {
                 return Redirect("/Home/ErrorView");
             }
-            Permission permission = JsonConvert.DeserializeObject<Permission>(model.Data.ToString());
+            Models.Permission permission = JsonConvert.DeserializeObject<Models.Permission>(model.Data.ToString());
             return View(permission);
         }
 
@@ -71,7 +80,7 @@ namespace ElectronNet.Controllers
 
             HttpContent content = new FormUrlEncodedContent(list);
 
-            string json = await PostAsync(content, "/v1/Permission/AddPermission");
+            string json = await PostAsync(content, _urlSettings.Permission.AddPermission);
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
 
             return Content(json, "application/json", Encoding.UTF8);
@@ -83,9 +92,9 @@ namespace ElectronNet.Controllers
         /// <param name="model">数据模型</param>
         /// <returns>服务器返回内容</returns>
         [HttpPut]
-        public async Task<IActionResult> EditPermission(Permission model)
+        public async Task<IActionResult> EditPermission(Models.Permission model)
         {
-            string json = await PutAsync(model, "/v1/Permission/EditPermission");
+            string json = await PutAsync(model, _urlSettings.Permission.EditPermission);
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
             return Content(json, "application/json", Encoding.UTF8);
         }
@@ -98,7 +107,7 @@ namespace ElectronNet.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePermission(long id)
         {
-            string json = await DeleteAsync("?id=" + id, "/v1/Permission/DeletePermission");
+            string json = await DeleteAsync("?id=" + id, _urlSettings.Permission.DeletePermission);
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
             return Content(json, "application/json", Encoding.UTF8);
         }
@@ -119,7 +128,7 @@ namespace ElectronNet.Controllers
             }
 
             QueryString query = QueryString.Create(list);
-            string json = await DeleteAsync(query, "/v1/Permission/BatchDeletePermission");
+            string json = await DeleteAsync(query, _urlSettings.Permission.BatchDeletePermission);
             Response.StatusCode = JsonConvert.DeserializeObject<ResultModel>(json).Status;
             return Content(json, "application/json", Encoding.UTF8);
         }

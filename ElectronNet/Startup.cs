@@ -1,10 +1,12 @@
-﻿using ElectronNET.API;
+﻿using ElectronNet.ApiSettings;
+using ElectronNET.API;
 using ElectronNET.API.Entities;
 using Exceptionless;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ElectronNet
@@ -25,8 +27,12 @@ namespace ElectronNet
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ExceptionFilter());
-                options.Filters.Add(new ActionFilter());
+                //options.Filters.Add(new ActionFilter());
             });
+
+            IConfigurationBuilder configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("apisettings.json");
+            IConfigurationRoot configRoot = configuration.Build();
+            services.Configure<FirstVersion>(configRoot);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

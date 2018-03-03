@@ -1,6 +1,8 @@
-﻿using ElectronNet.Models;
+﻿using ElectronNet.ApiSettings;
+using ElectronNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -15,10 +17,12 @@ namespace ElectronNet.Controllers
     public class HomeController : Controller
     {
         private readonly IMemoryCache _cache;
+        private readonly FirstVersion _urlSettings;
 
-        public HomeController(IMemoryCache memoryCache)
+        public HomeController(IMemoryCache memoryCache, IOptions<FirstVersion> options)
         {
             _cache = memoryCache;
+            _urlSettings = options.Value;
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace ElectronNet.Controllers
             };
 
             FormUrlEncodedContent content = new FormUrlEncodedContent(values);
-            string value = await CommonHelper.PostAsync(content, "/v1/Home/Login");
+            string value = await CommonHelper.PostAsync(content, _urlSettings.Home.Login);
             ResultModel model = JsonConvert.DeserializeObject<ResultModel>(value);
             _cache.Set("adminUserId", model.Data);
             Response.StatusCode = model.Status;

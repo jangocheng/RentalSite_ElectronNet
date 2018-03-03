@@ -11,7 +11,7 @@ namespace ElectronNet
         public void OnException(ExceptionContext context)
         {
             context.Exception.ToExceptionless().Submit();
-            //判断Result是否可以转换为ViewResult
+            //判断是否为get请求
             if (context.HttpContext.Request.Method.ToLower() == "get")
             {
                 context.Result = new RedirectResult("/Home/PromptView");

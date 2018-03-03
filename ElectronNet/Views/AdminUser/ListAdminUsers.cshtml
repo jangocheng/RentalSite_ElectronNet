@@ -1,6 +1,6 @@
-﻿@model string
+﻿
 @{
-    ViewData["Title"] = "权限列表";
+    ViewData["Title"] = "后台用户列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,7 +8,13 @@
     <div class="layui-tab">
         <blockquote class="layui-elem-quote news_search">
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加权限</a>
+                <div class="layui-input-inline">
+                    <input type="text" id="searchStr" placeholder="请输入用户名或手机号码" class="layui-input">
+                </div>
+                <a class="layui-btn search_btn"><i class="layui-icon">&#xe615;</i>查询</a>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加用户</a>
             </div>
             <div class="layui-inline">
                 <a class="layui-btn layui-btn-danger batchDel"><i class="layui-icon">&#xe640;</i>批量删除</a>
@@ -18,39 +24,35 @@
     </div>
 </section>
 
-<script type="text/html" id="perBar">
+<script type="text/html" id="adminUserBar">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
 @section Scripts{
     <script type="text/javascript">
-        let json = JSON.parse('@Html.Raw(Model)');
-
         layui.use(["table", "layer"], function () {
             let table = layui.table;
             let layer = layui.layer;
 
-            if (json.status != 200) {
-                layer.open({
-                    content: json.message,
-                    offset: "auto",
-                    btnAlign: "c"
-                });
-                return false;
-            }
-
             table.render({
+                id: 'adminLayuiTable',
                 elem: '#dataTable',
                 height: "full-108",
-                data: json.data,
-                limit: json.data.length,
+                page: true,
+                url: '/AdminUser/GetAdminUsers',
                 cols: [[
                     { fixed: "left", type: "checkbox" },
-                    { field: 'name', title: '名称', align: 'center' },
-                    { field: 'description', title: '描述', align: 'center' },
-                    { fixed: "right", align: 'center', toolbar: '#perBar', title: '操作' }
-                ]]
+                    { field: 'name', title: '用户名', align: 'center' },
+                    { field: 'cityName', title: '所属城市', align: 'center' },
+                    { field: 'phoneNum', title: '电话号码', align: 'center' },
+                    { fixed: "right", align: 'center', toolbar: '#adminUserBar', title: '操作' }
+                ]],
+                response: {
+                    statusName: 'statusCode',
+                    statusCode: 200,
+                    msgName: 'message'
+                }
             });
 
             //监听工具条
@@ -60,8 +62,8 @@
                     parent.layer.confirm('真的删除吗？', function (index) {
                         parent.layer.close(index);
                         $.ajax({
-                            url: "/Permission/DeletePermission",
-                            type: "DELETE",
+                            url: "/AdminUser/DeleteAdminUser",
+                            type: "delete",
                             data: { id: data.id },
                             success: function (res) {
                                 parent.layer.alert(res.message, {
@@ -85,9 +87,9 @@
                         type: 2,
                         area: ['700px', '450px'],
                         maxmin: true,
-                        content: '/Permission/EditPermission?id=' + data.id,
+                        content: '/AdminUser/EditAdminUser?id=' + data.id,
                         id: 'EditPermission',
-                        title: '编辑权限项'
+                        title: '编辑用户'
                     });
                 }
             });
@@ -97,14 +99,15 @@
                     type: 2,
                     area: ['700px', '450px'],
                     maxmin: true,
-                    content: '/Permission/AddPermission',
+                    content: '/AdminUser/AddAdminUser',
                     id: 'AddPermission',
-                    title: '添加权限项'
+                    title: '添加用户'
                 });
             });
 
             $(".batchDel").click(function () {
-                let checkStatus = table.checkStatus('dataTable');
+                let checkStatus = table.checkStatus('adminLayuiTable');
+                console.log(checkStatus)
                 let data = checkStatus.data;
                 let idArr = [];
                 for (var i = 0; i < data.length; i++) {
@@ -112,9 +115,9 @@
                 }
 
                 $.ajax({
-                    url: '/Permission/BatchDeletePermissions',
+                    url: '/AdminUser/BatchDeleteAdminUsers',
                     type: 'delete',
-                    data: { idStr: JSON.stringify(idArr)},
+                    data: { idStr: JSON.stringify(idArr) },
                     success: function (res) {
                         parent.layer.alert(res.message, {
                             icon: 1,
@@ -129,7 +132,18 @@
                             skin: 'layer-ext-moon'
                         });
                     }
-                })
+                });
+            });
+
+            $(".search_btn").click(function () {
+                table.reload('adminLayuiTable', {
+                    page: {
+                        curr: 1
+                    },
+                    where: {
+                        searchStr: $("#searchStr").val()
+                    }
+                });
             });
         });
     </script>

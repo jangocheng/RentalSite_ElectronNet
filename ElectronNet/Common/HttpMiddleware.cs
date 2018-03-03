@@ -39,6 +39,10 @@ namespace ElectronNet
                         httpContext.Response.Redirect("/Home/NotFoundView");
                     }
                 }
+                else if (httpContext.Response.StatusCode == (int)HttpStatusCode.InternalServerError && !httpContext.IsAjax())
+                {
+                    httpContext.Response.Redirect("/Home/PromptView");
+                }
             }
             catch (Exception exception)
             {

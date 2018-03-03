@@ -50,7 +50,7 @@
             });
 
             layform.on('submit(submitBtn)', function (data) {
-                let params = data.field;
+                let params = $("#roleEditFrom").serialize();
                 $.ajax({
                     type: "put",
                     url: "/Role/EditRole",

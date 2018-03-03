@@ -4,15 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<span class="layui-breadcrumb">
-    <i class="layui-icon">&#xe68e;</i>
-    <a>首页</a>
-    <a>权限管理</a>
-    <a>
-        <cite>角色管理</cite>
-    </a>
-</span>
-
 <section class="layui-larry-box">
     <div class="layui-tab">
         <blockquote class="layui-elem-quote news_search">
@@ -51,7 +42,7 @@
 
             table.render({
                 elem: '#dataTable',
-                height: "full-127",
+                height: "full-108",
                 data: json.data,
                 limit: json.data.length,
                 cols: [[
@@ -95,7 +86,7 @@
                         maxmin: true,
                         content: '/Role/EditRole?id=' + data.id,
                         id: 'EditRole',
-                        title: '编辑权限项'
+                        title: '编辑角色'
                     });
                 }
             });
@@ -107,7 +98,7 @@
                     maxmin: true,
                     content: '/Role/AddRole',
                     id: 'AddRole',
-                    title: '添加权限项'
+                    title: '添加角色'
                 });
             });
 

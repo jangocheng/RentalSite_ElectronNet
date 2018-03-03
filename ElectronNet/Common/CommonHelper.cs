@@ -1,10 +1,9 @@
-﻿using JWT;
+﻿using ElectronNet.Models;
+using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -149,16 +149,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<string> GetAsync<TEntity>(TEntity model, string virtualRoute)
         {
-            //反射获取模型字段，创建QueryString
-            Type type = model.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            QueryString queryString = new QueryString();
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                string propertyValue = property.GetValue(model).ToString();
-                queryString.Add(propertyName, propertyValue);
-            }
+            QueryString queryString = QueryString.Create(GetKeyValuePairToEntity(model));
 
             //发送Http请求
             HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{ServerUrl}{virtualRoute}{queryString.ToString()}");
@@ -176,16 +167,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<T> GetAsync<T, TEntity>(TEntity model, string virtualRoute)
         {
-            //反射获取模型字段，创建QueryString
-            Type type = model.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            QueryString queryString = new QueryString();
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                string propertyValue = property.GetValue(model).ToString();
-                queryString.Add(propertyName, propertyValue);
-            }
+            QueryString queryString = QueryString.Create(GetKeyValuePairToEntity(model));
 
             //发送Http请求
             HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{ServerUrl}{virtualRoute}{queryString.ToString()}");
@@ -231,15 +213,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<T> PostAsync<T, TEntity>(TEntity model, string virtualRoute)
         {
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-            //以反射性形式创建KeyValuePair对象
-            PropertyInfo[] properties = model.GetType().GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                string key = property.Name;
-                object value = property.GetValue(model);
-                list.Add(new KeyValuePair<string, string>(key, value.ToString()));
-            }
+            List<KeyValuePair<string, string>> list = GetKeyValuePairToEntity(model);
 
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(list);
             HttpResponseMessage httpResponseMessage = await HttpClient.PostAsync(ServerUrl + virtualRoute, formContent);
@@ -255,15 +229,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<string> PostAsync<TEntity>(TEntity model, string virtualRoute)
         {
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-            //以反射性形式创建KeyValuePair对象
-            PropertyInfo[] properties = model.GetType().GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                string key = property.Name;
-                object value = property.GetValue(model);
-                list.Add(new KeyValuePair<string, string>(key, value.ToString()));
-            }
+            List<KeyValuePair<string, string>> list = GetKeyValuePairToEntity(model);
 
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(list);
             HttpResponseMessage httpResponseMessage = await HttpClient.PostAsync(ServerUrl + virtualRoute, formContent);
@@ -307,15 +273,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<T> PutAsync<T, TEntity>(TEntity model, string virtualRoute)
         {
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-            //以反射性形式创建KeyValuePair对象
-            PropertyInfo[] properties = model.GetType().GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                string key = property.Name;
-                object value = property.GetValue(model);
-                list.Add(new KeyValuePair<string, string>(key, value.ToString()));
-            }
+            List<KeyValuePair<string, string>> list = GetKeyValuePairToEntity(model);
 
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(list);
             HttpResponseMessage httpResponseMessage = await HttpClient.PutAsync(ServerUrl + virtualRoute, formContent);
@@ -331,15 +289,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<string> PutAsync<TEntity>(TEntity model, string virtualRoute)
         {
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-            //以反射性形式创建KeyValuePair对象
-            PropertyInfo[] properties = model.GetType().GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                string key = property.Name;
-                object value = property.GetValue(model);
-                list.Add(new KeyValuePair<string, string>(key, value.ToString()));
-            }
+            List<KeyValuePair<string, string>> list = GetKeyValuePairToEntity(model);
 
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(list);
             HttpResponseMessage httpResponseMessage = await HttpClient.PutAsync(ServerUrl + virtualRoute, formContent);
@@ -409,16 +359,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<string> DeleteAsync<TEntity>(TEntity model, string virtualRoute)
         {
-            //反射获取模型字段，创建QueryString
-            Type type = model.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            QueryString queryString = new QueryString();
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                string propertyValue = property.GetValue(model).ToString();
-                queryString.Add(propertyName, propertyValue);
-            }
+            QueryString queryString = QueryString.Create(GetKeyValuePairToEntity(model));
 
             //发送Http请求
             HttpResponseMessage httpResponseMessage = await HttpClient.DeleteAsync($"{ServerUrl}{virtualRoute}{queryString.ToString()}");
@@ -436,16 +377,7 @@ namespace ElectronNet
         /// <returns>请求返回内容</returns>
         public async static Task<T> DeleteAsync<T, TEntity>(TEntity model, string virtualRoute)
         {
-            //反射获取模型字段，创建QueryString
-            Type type = model.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            QueryString queryString = new QueryString();
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                string propertyValue = property.GetValue(model).ToString();
-                queryString.Add(propertyName, propertyValue);
-            }
+            QueryString queryString = QueryString.Create(GetKeyValuePairToEntity(model));
 
             //发送Http请求
             HttpResponseMessage httpResponseMessage = await HttpClient.DeleteAsync($"{ServerUrl}{virtualRoute}{queryString.ToString()}");
@@ -456,6 +388,42 @@ namespace ElectronNet
         #endregion
 
         /// <summary>
+        /// 使用反射将模型转化为KeyValuePair集合
+        /// </summary>
+        /// <typeparam name="TEntity">模型类型</typeparam>
+        /// <param name="model">数据模型</param>
+        /// <returns>KeyValuePair集合</returns>
+        public static List<KeyValuePair<string, string>> GetKeyValuePairToEntity<TEntity>(TEntity model)
+        {
+            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+            //以反射性形式创建KeyValuePair对象
+            PropertyInfo[] properties = model.GetType().GetProperties();
+            foreach (PropertyInfo property in properties)
+            {
+                string key = property.Name;
+                //判断属性类型是否为数组
+                bool isArr = property.PropertyType.IsArray;
+                if (isArr)
+                {
+                    Array array = (Array)property.GetValue(model);
+                    foreach (var item in array)
+                    {
+                        list.Add(new KeyValuePair<string, string>(key, item.ToString()));
+                    }
+                }
+                else
+                {
+                    object value = property.GetValue(model);
+                    if (value == null)
+                        continue;
+                    list.Add(new KeyValuePair<string, string>(key, value.ToString()));
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// 判断是否为Ajax请求
         /// </summary>
         /// <param name="httpContext">HttpContext上下文对象</param>
@@ -463,6 +431,78 @@ namespace ElectronNet
         public static bool IsAjax(this HttpContext httpContext)
         {
             return !string.IsNullOrEmpty(httpContext.Request.Headers["X-Requested-With"].FirstOrDefault());
+        }
+
+        /// <summary>
+        /// ResultModel转换LayuiTableModel
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        /// <param name="resultModel">ResultModel对象</param>
+        /// <returns>LayuiTableModel对象</returns>
+        public static LayuiTableModel<T> ToTableModel<T>(ResultModel resultModel)
+        {
+            var layuiTable = JsonConvert.DeserializeObject<LayuiTableModel<T>>(resultModel.Data.ToString());
+            layuiTable.StatusCode = resultModel.Status;
+            layuiTable.Message = resultModel.Message;
+            return layuiTable;
+        }
+
+        /// <summary>
+        /// 计算一个文件的MD5值
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <returns>MD5值</returns>
+        public static string CalcMD5(Stream stream)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] computeBytes = md5.ComputeHash(stream);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < computeBytes.Length; i++)
+                {
+                    sb.Append(computeBytes[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Stream转byte[]
+        /// </summary>
+        /// <param name="stream">需要转换的文件流</param>
+        /// <returns>转换后的byte[]</returns>
+        public static byte[] StreamToBytes(Stream stream)
+        {
+            byte[] bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            // 设置当前流的位置为流的开始
+            stream.Seek(0, SeekOrigin.Begin);
+            return bytes;
+        }
+
+        /// <summary>
+        /// 获取字符串的MD5值
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string GetMd5Hash(this string input)
+        {
+            MD5 md5Hash = MD5.Create();
+
+            // 将输入字符串转换为字节数组并计算哈希数据  
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // 创建一个 Stringbuilder 来收集字节并创建字符串  
+            StringBuilder sBuilder = new StringBuilder();
+
+            // 循环遍历哈希数据的每一个字节并格式化为十六进制字符串  
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // 返回十六进制字符串  
+            return sBuilder.ToString();
         }
     }
 }

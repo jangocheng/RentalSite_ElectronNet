@@ -1,0 +1,177 @@
+﻿@model List<Role>
+@{
+    ViewData["Title"] = "添加后台用户";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="margin-left:20px;margin-right:20px;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+        <legend>添加后台用户</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" method="post" id="adminUserAddFrom" action="/AdminUser/AddAdminUser">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" autocomplete="off" placeholder="请输入用户名" class="layui-input" lay-verify="name">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="phoneNum" autocomplete="off" placeholder="请输入电话号码" class="layui-input" lay-verify="required|phone">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input" lay-verify="required|email">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" autocomplete="off" placeholder="请输入密码" class="layui-input" lay-verify="required|password">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password2" autocomplete="off" placeholder="请确认密码" class="layui-input" lay-verify="required|password2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在城市</label>
+            <div class="layui-input-block">
+                <select asp-items="ViewBag.Cities" name="cityId" lay-verify="cityId"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传头像</label>
+            <div class="layui-input-block">
+                <div class="layui-upload">
+                    <button type="button" class="layui-btn layui-btn-normal" id="fileBtn">选择文件</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">权限项</label>
+            <div class="layui-input-block">
+                @foreach (var role in Model)
+                {
+                    <input type="checkbox" name="roleIds" value="@role.Id" title="@role.Name" lay-skin="primary" />
+                }
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="submitBtn">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        layui.use(['form', 'layer', 'upload'], function () {
+            let layform = layui.form;
+            let upload = layui.upload;
+            layform.verify({
+                name: function (value) {
+                    if (value.length > 50) {
+                        return '用户名不得超过50个字符！';
+                    }
+                    if (value.length < 2) {
+                        return '用户名最少两个字符！';
+                    }
+                },
+                password: function (value) {
+                    if (value.length < 6 || value.length > 16) {
+                        return '请输入6至16位长度的密码！';
+                    }
+                },
+                password2: function (value) {
+                    let pwdVal = $("[name='password']").val();
+                    if (value != pwdVal) {
+                        return '两次输入的密码不一致！';
+                    }
+                }
+            });
+
+            layform.on('submit(submitBtn)', function (data) {
+                let params = data.field;
+                let file = $("[name='headImg']").get(0).files[0];
+                if (file != null && file != undefined) {
+                    if (file.size > 1024 * 1024) {
+                        parent.parent.layer.alert('文件大小不能超过1MB', {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                        return false;
+                    }
+                    let fileName = file.name;
+                    let point = fileName.lastIndexOf(".");
+                    let fileExt = fileName.substr(point);
+                    if (fileExt != '.jpg' && fileExt != '.png' && fileExt != '.gif' && fileExt != '.jpeg') {
+                        parent.parent.layer.alert('选择的图片中包含不支持的格式', {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                        return false;
+                    }
+                }
+
+                let formData = new FormData(document.getElementById('adminUserAddFrom'));
+                let loadingIndex = parent.parent.layer.load(1, {
+                    shade: [0.5, '#393D49']
+                });
+
+                $.ajax({
+                    type: "post",
+                    url: "/AdminUser/AddAdminUser",
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    data: formData,
+                    success: function (res) {
+                        parent.parent.layer.closeAll('loading');
+                        if (res.status != 200) {
+                            parent.parent.layer.alert(res.message, {
+                                icon: 2,
+                                skin: 'layer-ext-moon'
+                            });
+                        }
+                        else {
+                            parent.parent.layer.alert('添加成功。', {
+                                icon: 1,
+                                skin: 'layer-ext-moon'
+                            });
+
+                            parent.layui.table.reload('adminLayuiTable');
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        parent.parent.layer.closeAll('loading');
+                        let responseText = JSON.parse(XMLHttpRequest.responseText);
+                        parent.parent.layer.alert(responseText.message, {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                    }
+                });
+
+                return false;
+            });
+
+            upload.render({
+                elem: '#fileBtn',
+                auto: false,
+                accept: 'images',
+                field: 'headImg',
+                size: 1024
+            });
+        });
+    </script>
+}
