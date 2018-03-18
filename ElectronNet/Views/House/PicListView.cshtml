@@ -5,4 +5,62 @@
 }
 
 <link href="http://aspnetweb.b0.upaiyun.com/static/rentalsite/admin/static/lib/lightbox2/2.8.1/css/lightbox.css" rel="stylesheet" />
-<form></form>
+<form id="picList" class="layui-form layui-form-pane">
+    <div class="layui-row layui-col-space10">
+        @foreach (var pic in Model)
+        {
+            <div class="layui-col-sm4 layui-col-md3 layui-col-lg2">
+                <div class="layui-card">
+                    <div class="portfoliobox">
+                        <div class="picbox" style="text-align:center;">
+                            <input type="checkbox" name="picIds" value="@pic.Id" lay-ignore />
+                            <a href="@pic.Url" data-lightbox="gallery">
+
+                                <img src="@pic.ThumbUrl" style="height:100px;">
+                            </a>
+                        </div>
+                        <div class="textbox"></div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="submitBtn">删除</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script src="http://aspnetweb.b0.upaiyun.com/static/rentalsite/admin/static/lib/lightbox2/2.8.1/js/lightbox-plus-jquery.min.js"></script>
+    <script type="text/javascript">
+        layui.use(['form', 'layer'], function () {
+            let layform = layui.form;
+            layform.on('submit(submitBtn)', function (data) {
+                let arr = new Array();
+                $("input:checkbox[name=picIds]:checked").each(function () {
+                    arr.push($(this).val());
+                });
+
+                $.ajax({
+                    type: 'delete',
+                    url: "/House/DeletePic",
+                    data: { picArr: JSON.stringify(arr)},
+                    success: function (res) {
+                        location.reload();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        let responseText = JSON.parse(XMLHttpRequest.responseText);
+                        parent.parent.layer.alert(responseText.message, {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}

@@ -120,6 +120,15 @@
                         title: '房源图片上传'
                     });
                 }
+                else if (obj.event === 'piclist') {
+                    layer.open({
+                        type: 2,
+                        area: ['100%', '100%'],
+                        content: '/House/PicListView?houseId=' + data.id,
+                        id: 'EditHouse',
+                        title: '房源图片列表'
+                    });
+                }
             });
 
             $(".newsAdd_btn").click(function () {

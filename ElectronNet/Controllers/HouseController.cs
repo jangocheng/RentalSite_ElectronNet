@@ -189,7 +189,7 @@ namespace ElectronNet.Controllers
                 {
                     return Json(new ResultModel((int)HttpStatusCode.BadRequest, "选择的图片中包含不支持的格式", null));
                 }
-                
+
                 var (isOk, filePath) = await FileUpload(file.OpenReadStream(), fileExt);
                 if (!isOk)
                 {
@@ -232,9 +232,33 @@ namespace ElectronNet.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> PicListView()
+        public async Task<IActionResult> PicListView(long houseId)
         {
-            return View();
+            ResultModel result = await GetAsync<ResultModel>("?houseId=" + houseId, _url.House.PictureList);
+            List<HousePictureList> list = JsonConvert.DeserializeObject<List<HousePictureList>>(result.Data.ToString());
+            Response.StatusCode = result.Status;
+            return View(list);
+        }
+
+        /// <summary>
+        /// 删除图片
+        /// </summary>
+        /// <param name="picIds">图片的Id</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeletePic(string picArr)
+        {
+            int[] picIds = JsonConvert.DeserializeObject<int[]>(picArr);
+            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+            foreach (var picId in picIds)
+            {
+                keyValuePairs.Add(new KeyValuePair<string, string>(nameof(picIds), picId.ToString()));
+            }
+            QueryString queryString = QueryString.Create(keyValuePairs);
+
+            ResultModel result = await DeleteAsync<ResultModel>(queryString, _url.House.DeletePic);
+            Response.StatusCode = result.Status;
+            return Json(result);
         }
     }
 }
