@@ -29,5 +29,15 @@
         /// CityController Url
         /// </summary>
         public CitySettings City { get; set; }
+
+        /// <summary>
+        /// HouseController Url
+        /// </summary>
+        public HouseSettings House { get; set; }
+
+        /// <summary>
+        /// CommunityController Url
+        /// </summary>
+        public CommunitySettings Community { get; set; }
     }
 }

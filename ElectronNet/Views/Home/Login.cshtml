@@ -16,17 +16,17 @@
         <h1>租客后台登录</h1>
         <form class="layui-form" method="post" asp-controller="Home" asp-action="Login">
             <div class="layui-form-item">
-                <input class="layui-input" name="username" placeholder="用户名" lay-verify="required" type="text" autocomplete="off">
+                <input class="layui-input" name="phoneNum" placeholder="手机号码" lay-verify="required" type="text" autocomplete="off">
             </div>
             <div class="layui-form-item">
                 <input class="layui-input" name="password" placeholder="密码" lay-verify="required" type="password" autocomplete="off">
             </div>
-            <div class="layui-form-item form_code">
+            @*<div class="layui-form-item form_code">
                 <input class="layui-input" name="validatecode" placeholder="验证码" lay-verify="required" type="text" autocomplete="off">
                 <div class="code">
                     <img src="http://www.17sucai.com/preview/305986/2017-08-10/layuiCMS-master/images/code.jpg" width="116" height="36">
                 </div>
-            </div>
+            </div>*@
             <button class="layui-btn login_btn" lay-submit="" lay-filter="login">登录</button>
         </form>
     </div>

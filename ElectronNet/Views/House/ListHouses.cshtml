@@ -1,6 +1,6 @@
-﻿
+﻿@model SelectList
 @{
-    ViewData["Title"] = "后台用户列表";
+    ViewData["Title"] = "房源列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,13 +8,13 @@
     <div class="layui-tab">
         <blockquote class="layui-elem-quote news_search">
             <div class="layui-inline">
-                <div class="layui-input-inline">
-                    <input type="text" id="searchStr" placeholder="请输入用户名或手机号码" class="layui-input">
+                <div class="layui-inline">
+                    <form class="layui-form"><select asp-items="Model" id="houseType"></select></form>
                 </div>
                 <a class="layui-btn search_btn"><i class="layui-icon">&#xe615;</i>查询</a>
             </div>
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加用户</a>
+                <a class="layui-btn layui-btn-normal newsAdd_btn"><i class="layui-icon">&#xe654;</i>添加房源</a>
             </div>
             <div class="layui-inline">
                 <a class="layui-btn layui-btn-danger batchDel"><i class="layui-icon">&#xe640;</i>批量删除</a>
@@ -24,9 +24,11 @@
     </div>
 </section>
 
-<script type="text/html" id="adminUserBar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+<script type="text/html" id="housesBar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    <a class="layui-btn layui-btn-xs" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+    <a class="layui-btn layui-btn-xs" lay-event="upload"><i class="fa fa-cloud-upload" aria-hidden="true"></i></a>
+    <a class="layui-btn layui-btn-xs" lay-event="piclist"><i class="layui-icon">&#xe64a;</i></a>
 </script>
 
 @section Scripts{
@@ -36,17 +38,33 @@
             let layer = layui.layer;
 
             table.render({
-                id: 'adminLayuiTable',
+                id: 'houseLayuiTable',
                 elem: '#dataTable',
                 height: "full-108",
                 page: true,
-                url: '/AdminUser/GetAdminUsers',
+                url: '/House/GetHouses',
                 cols: [[
                     { fixed: "left", type: "checkbox" },
-                    { field: 'name', title: '用户名', align: 'center' },
-                    { field: 'cityName', title: '所属城市', align: 'center' },
-                    { field: 'phoneNum', title: '电话号码', align: 'center' },
-                    { fixed: "right", align: 'center', toolbar: '#adminUserBar', title: '操作' }
+                    { field: 'cityName', width: 100, title: '城市', align: 'center' },
+                    { field: 'regionName', width: 100, title: '区域', align: 'center' },
+                    { field: 'communityName', width: 100, title: '小区', align: 'center' },
+                    { field: 'communityLocation', width: 100, title: '地段', align: 'center' },
+                    { field: 'communityTraffic', width: 100, title: '周围交通', align: 'center' },
+                    { field: 'communityBuildYear', width: 150, title: '小区创建年份', align: 'center' },
+                    { field: 'address', width: 200, title: '地址', align: 'center', style: 'cursor: pointer;' },
+                    { field: 'monthRent', width: 80, title: '租金', align: 'center' },
+                    { field: 'roomTypeName', width: 100, title: '房型', align: 'center' },
+                    { field: 'statusName', width: 100, title: '状态', align: 'center' },
+                    { field: 'statusName', width: 100, title: '状态', align: 'center' },
+                    { field: 'area', width: 80, title: '面积', align: 'center' },
+                    { field: 'decorateStatusName', width: 100, title: '是否精装', align: 'center' },
+                    { field: 'totalFloorCount', width: 80, title: '总楼层', align: 'center' },
+                    { field: 'floorIndex', width: 100, title: '所在楼层', align: 'center' },
+                    { field: 'direction', width: 80, title: '朝向', align: 'center' },
+                    { field: 'ownerName', width: 100, title: '业主姓名', align: 'center' },
+                    { field: 'ownerPhoneNum', width: 150, title: '业主电话号码', align: 'center' },
+                    { field: 'description', width: 200, title: '描述', align: 'center', style: 'cursor: pointer;' },
+                    { fixed: "right", width: 200, align: 'center', toolbar: '#housesBar', title: '操作' }
                 ]],
                 response: {
                     statusName: 'statusCode',
@@ -62,7 +80,7 @@
                     parent.layer.confirm('真的删除吗？', function (index) {
                         parent.layer.close(index);
                         $.ajax({
-                            url: "/AdminUser/DeleteAdminUser",
+                            url: "/House/DeleteHouse",
                             type: "delete",
                             data: { id: data.id },
                             success: function (res) {
@@ -83,32 +101,41 @@
                     });
                 }
                 else if (obj.event === 'edit') {
-                    let index = layer.open({
+                    layer.open({
                         type: 2,
                         area: ['700px', '450px'],
                         maxmin: true,
-                        content: '/AdminUser/EditAdminUser?id=' + data.id,
-                        id: 'EditAdminUser',
-                        title: '编辑用户'
+                        content: '/House/EditHouse?id=' + data.id,
+                        id: 'EditHouse',
+                        title: '编辑房源'
                     });
-                    layer.iframeAuto(index);
+                }
+                else if (obj.event === 'upload') {
+                    layer.open({
+                        type: 2,
+                        area: ['700px', '450px'],
+                        maxmin: true,
+                        content: '/House/PicUpload?id=' + data.id,
+                        id: 'EditHouse',
+                        title: '房源图片上传'
+                    });
                 }
             });
 
             $(".newsAdd_btn").click(function () {
-                let index = layer.open({
+                var frameIndex;
+                layer.open({
                     type: 2,
-                    area: ['700px', '450px'],
-                    maxmin: true,
-                    content: '/AdminUser/AddAdminUser',
-                    id: 'AddAdminUser',
-                    title: '添加用户'
+                    area: ['100%', '100%'],
+                    //maxmin: true,
+                    content: '/House/AddHouse',
+                    id: 'AddHouse',
+                    title: '添加房源',
                 });
-                layer.iframeAuto(index);
             });
 
             $(".batchDel").click(function () {
-                let checkStatus = table.checkStatus('adminLayuiTable');
+                let checkStatus = table.checkStatus('houseLayuiTable');
                 console.log(checkStatus)
                 let data = checkStatus.data;
                 let idArr = [];
@@ -117,7 +144,7 @@
                 }
 
                 $.ajax({
-                    url: '/AdminUser/BatchDeleteAdminUsers',
+                    url: '/House/BatchDeleteHouse',
                     type: 'delete',
                     data: { idStr: JSON.stringify(idArr) },
                     success: function (res) {
@@ -138,12 +165,12 @@
             });
 
             $(".search_btn").click(function () {
-                table.reload('adminLayuiTable', {
+                table.reload('houseLayuiTable', {
                     page: {
                         curr: 1
                     },
                     where: {
-                        searchStr: $("#searchStr").val()
+                        type: $("#houseType").val()
                     }
                 });
             });

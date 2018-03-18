@@ -1,9 +1,11 @@
-﻿using ElectronNet.Models;
+﻿using ElectronNet.Common;
+using ElectronNet.Models;
 using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,9 +27,9 @@ namespace ElectronNet
             {
                 Proxy = null,
                 DefaultProxyCredentials = null,
-                UseProxy = false
+                UseProxy = false,
+                UseCookies = false
             }, false);
-            HttpClient.DefaultRequestHeaders.Add("AccessToken", TokenHeader());
         }
 
         /// <summary>
@@ -54,20 +56,13 @@ namespace ElectronNet
         /// 生成AccessToken
         /// </summary>
         /// <returns>AccessToken字符串</returns>
-        public static string TokenHeader()
+        public static string TokenHeader(long adminUserId)
         {
-            //MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-            //bool res = cache.TryGetValue("adminUserId", out long adminUserId);
-            //if (!res)
-            //{
-            //    return null;
-            //}
-
             Dictionary<string, string> dictionary = new Dictionary<string, string>
             {
                 {
                     "adminUserId",
-                    "1"//adminUserId.ToString()
+                    adminUserId.ToString()
                 },
                 {
                     "UUID",
@@ -452,7 +447,7 @@ namespace ElectronNet
         /// </summary>
         /// <param name="stream">文件流</param>
         /// <returns>MD5值</returns>
-        public static string CalcMD5(Stream stream)
+        public static string GetMd5Hash(Stream stream)
         {
             using (MD5 md5 = MD5.Create())
             {
@@ -462,29 +457,16 @@ namespace ElectronNet
                 {
                     sb.Append(computeBytes[i].ToString("x2"));
                 }
+                stream.Position = 0;
                 return sb.ToString();
             }
         }
 
         /// <summary>
-        /// Stream转byte[]
-        /// </summary>
-        /// <param name="stream">需要转换的文件流</param>
-        /// <returns>转换后的byte[]</returns>
-        public static byte[] StreamToBytes(Stream stream)
-        {
-            byte[] bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
-            // 设置当前流的位置为流的开始
-            stream.Seek(0, SeekOrigin.Begin);
-            return bytes;
-        }
-
-        /// <summary>
         /// 获取字符串的MD5值
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">需要计算的字符串</param>
+        /// <returns>MD5值</returns>
         public static string GetMd5Hash(this string input)
         {
             MD5 md5Hash = MD5.Create();
@@ -503,6 +485,80 @@ namespace ElectronNet
 
             // 返回十六进制字符串  
             return sBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 计算一个文件的MD5值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>MD5值</returns>
+        public static string GetMd5Hash(byte[] buffer)
+        {
+            string str = Encoding.UTF8.GetString(buffer);
+            return str.GetMd5Hash();
+        }
+
+        /// <summary>
+        /// Stream转byte[]
+        /// </summary>
+        /// <param name="stream">需要转换的文件流</param>
+        /// <returns>转换后的byte[]</returns>
+        public static byte[] StreamToBytes(Stream stream)
+        {
+            byte[] bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            // 设置当前流的位置为流的开始
+            stream.Seek(0, SeekOrigin.Begin);
+            return bytes;
+        }
+
+        /// <summary>
+        /// 文件上传
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <param name="ext">文件扩展名</param>
+        /// <returns>是否上传成功;文件路径</returns>
+        public static async Task<(bool, string)> FileUpload(Stream stream, string ext)
+        {
+            UpYun upYun = new UpYun
+            {
+                Operator = "rentalsite",
+                Password = "tianxin070221203"
+            };
+            //计算文件的MD5值并拼接文件路径
+            string fileMd5 = GetMd5Hash(stream);
+            string fileName = $"{fileMd5}{ext}";
+            DateTime now = DateTime.Now;
+            string fullPath = $"/uploadFile/{now.Year}/{now.Month}/{now.Day}/{fileName}";
+
+            //文件上传至又拍云中
+            byte[] fileByteArr = StreamToBytes(stream);  //Stream转换byte[]
+            bool isOK = await upYun.WriteFileAsync(fileByteArr, fullPath);
+            return (isOK, fullPath);
+        }
+
+        /// <summary>
+        /// 文件上传
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <param name="ext">文件扩展名</param>
+        /// <returns>是否上传成功;文件路径</returns>
+        public static async Task<(bool, string)> FileUpload(byte[] buffer, string ext)
+        {
+            UpYun upYun = new UpYun
+            {
+                Operator = "rentalsite",
+                Password = "tianxin070221203"
+            };
+            //计算文件的MD5值并拼接文件路径
+            string fileMd5 = GetMd5Hash(buffer);
+            string fileName = $"{fileMd5}{ext}";
+            DateTime now = DateTime.Now;
+            string fullPath = $"/uploadFile/{now.Year}/{now.Month}/{now.Day}/{fileName}";
+
+            //文件上传至又拍云中
+            bool isOK = await upYun.WriteFileAsync(buffer, fullPath);
+            return (isOK, fullPath);
         }
     }
 }

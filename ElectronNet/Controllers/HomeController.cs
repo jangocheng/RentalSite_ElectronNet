@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,18 +56,42 @@ namespace ElectronNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string phoneNum, string password)
         {
+            //拼接参数并发送Http请求
             List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("phoneNumber", phoneNum),
-                new KeyValuePair<string, string>("password", password)
+                new KeyValuePair<string, string>("PhoneNumber", phoneNum),
+                new KeyValuePair<string, string>("Password", password)
             };
-
-            FormUrlEncodedContent content = new FormUrlEncodedContent(values);
+            HttpContent content = new FormUrlEncodedContent(values);
             string value = await CommonHelper.PostAsync(content, _urlSettings.Home.Login);
+            //获取服务器返回数据
             ResultModel model = JsonConvert.DeserializeObject<ResultModel>(value);
-            _cache.Set("adminUserId", model.Data);
+            if (model.Status == (int)HttpStatusCode.OK && model.Data != null)
+            {
+                _cache.Set("adminUserId", model.Data);
+                CommonHelper.HttpClient.DefaultRequestHeaders.Add("AccessToken", CommonHelper.TokenHeader(Convert.ToInt64(model.Data)));
+            }
+
             Response.StatusCode = model.Status;
             return Content(value, "application/json", Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            ResultModel res = await CommonHelper.PostAsync<ResultModel>(new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()), "/v1/Home/Logout");
+            if (res.Status == 200)
+            {
+                CommonHelper.HttpClient.DefaultRequestHeaders.Clear();
+                Response.StatusCode = res.Status;
+                _cache.Remove("adminUserId");
+            }
+            
+            return Json(res);
         }
 
         /// <summary>

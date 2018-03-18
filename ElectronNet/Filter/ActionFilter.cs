@@ -1,11 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 
 namespace ElectronNet
 {
     public class ActionFilter : IActionFilter
     {
+        private readonly IMemoryCache _cache;
+
+        public ActionFilter(IMemoryCache memoryCache)
+        {
+            _cache = memoryCache;
+        }
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
             //判断是否为ajax请求
@@ -30,7 +38,15 @@ namespace ElectronNet
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            var routeDict = context.ActionDescriptor.RouteValues;
+            if (routeDict["controller"] == "Home" && routeDict["action"] == "Login")
+                return;
 
+            bool res = _cache.TryGetValue("adminUserId", out long adminUserId);
+            if (!res)
+            {
+                context.Result = new RedirectResult("/Home/Login");
+            }
         }
     }
 }

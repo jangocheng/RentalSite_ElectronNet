@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using ElectronNet.ApiSettings;
+﻿using ElectronNet.ApiSettings;
 using ElectronNet.Common;
 using ElectronNet.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using static ElectronNet.CommonHelper;
 
 namespace ElectronNet.Controllers
@@ -56,7 +56,7 @@ namespace ElectronNet.Controllers
             };
 
             string url;
-            if (!string.IsNullOrEmpty(searchStr))
+            if (!string.IsNullOrEmpty(searchStr))   //判断查询条件是否为空并确定访问url
             {
                 url = _urlSettings.AdminUser.Search;
                 list.Add(new KeyValuePair<string, string>(nameof(searchStr), searchStr));
@@ -118,7 +118,7 @@ namespace ElectronNet.Controllers
             else if (headImg?.Length > 0)
             {
                 //判断文件格式
-                string[] extArr = { ".jpg", ".png", ".gif", ".jpeg" };
+                string[] extArr = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
                 string fileExt = Path.GetExtension(headImg.FileName);
                 if (!extArr.Contains(fileExt))
                 {
@@ -126,7 +126,7 @@ namespace ElectronNet.Controllers
                 }
 
                 //计算文件的MD5值并拼接文件路径
-                string fileMd5 = CalcMD5(headImg.OpenReadStream());
+                string fileMd5 = GetMd5Hash(headImg.OpenReadStream());
                 string fileName = $"{fileMd5}{fileExt}";
                 DateTime now = DateTime.Now;
                 string fullPath = $"/uploadFile/{now.Year}/{now.Month}/{now.Day}/{fileName}";
@@ -134,8 +134,8 @@ namespace ElectronNet.Controllers
                 //文件上传至又拍云中
                 UpYun upYun = new UpYun
                 {
-                    Operator = "",
-                    Password = ""
+                    Operator = "rentalsite",
+                    Password = "tianxin070221203"
                 };
 
                 byte[] fileByteArr = StreamToBytes(headImg.OpenReadStream());  //Stream转换byte[]
@@ -213,7 +213,7 @@ namespace ElectronNet.Controllers
                 }
 
                 //计算文件的MD5值并拼接文件路径
-                string fileMd5 = CalcMD5(headImg.OpenReadStream());
+                string fileMd5 = GetMd5Hash(headImg.OpenReadStream());
                 string fileName = $"{fileMd5}{fileExt}";
                 DateTime now = DateTime.Now;
                 string fullPath = $"/uploadFile/{now.Year}/{now.Month}/{now.Day}/{fileName}";
@@ -221,8 +221,8 @@ namespace ElectronNet.Controllers
                 //文件上传至又拍云中
                 UpYun upYun = new UpYun
                 {
-                    Operator = "",
-                    Password = ""
+                    Operator = "rentalsite",
+                    Password = "tianxin070221203"
                 };
 
                 byte[] fileByteArr = StreamToBytes(headImg.OpenReadStream());  //Stream转换byte[]

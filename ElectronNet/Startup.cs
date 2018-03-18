@@ -23,11 +23,12 @@ namespace ElectronNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(typeof(ActionFilter));
             services.AddMemoryCache();
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ExceptionFilter());
-                //options.Filters.Add(new ActionFilter());
+                options.Filters.Add(typeof(ActionFilter));
             });
 
             IConfigurationBuilder configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("apisettings.json");

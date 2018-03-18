@@ -36,5 +36,20 @@
     "EditCity": "/v1/City/EditCity",
     "DeleteCity": "/v1/City/DeleteCity",
     "BatchDeleteCity": "/v1/City/BatchDeleteCity"
+  },
+  "House": {
+    "ListHouses": "/v1/House/ListHouses",
+    "GetDict": "/v1/House/GetDict",
+    "AddHouse": "/v1/House/AddHouse",
+    "GetEditDict": "/v1/House/GetEditDict",
+    "EditHouse": "/v1/House/EditHouse",
+    "DeleteHouse": "/v1/House/DeleteHouse",
+    "BatchDeleteHouse": "/v1/House/BatchDeleteHouse",
+    "UploadPicture": "/v1/House/UploadPicture",
+    "DeletePic": "/v1/House/DeletePic",
+    "PictureList": "/v1/House/PictureList"
+  },
+  "Community": {
+    "GetByRegionId": "/v1/Community/GetByRegionId"
   }
 }

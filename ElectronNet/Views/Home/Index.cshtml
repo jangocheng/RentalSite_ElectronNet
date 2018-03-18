@@ -24,7 +24,7 @@
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a>
+                    <a id="logout">
                         <i class="fa fa-sign-out" aria-hidden="true"></i> 注销
                     </a>
                 </li>
@@ -37,9 +37,9 @@
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
                 <ul class="layui-nav layui-nav-tree" lay-filter="kitNavbar" kit-navbar>
                     <li class="layui-nav-item">
-                        <a>
+                        <a data-title="系统配置">
                             <i class="fa fa-cog" aria-hidden="true"></i>
-                            <span> 权限管理</span>
+                            <span> 系统配置</span>
                         </a>
                         <dl class="layui-nav-child">
                             <dd>
@@ -63,18 +63,22 @@
                         </dl>
                     </li>
                     <li class="layui-nav-item">
-                        <a>
+                        @*<a>
+                                <i class="fa fa-home" aria-hidden="true"></i>
+                                <span> 房源管理</span>
+                            </a>*@
+                        <a data-url="/House/ListHouses" data-icon="fa-user" data-title="房源管理" kit-target data-id="4">
                             <i class="fa fa-home" aria-hidden="true"></i>
                             <span> 房源管理</span>
                         </a>
-                        <dl class="layui-nav-child">
-                            <dd>
-                                <a data-url="/AdminUser/ListAdminUsers" data-icon="fa-user" data-title="整租" kit-target data-id="4">
-                                    <i class="fa fa-user" aria-hidden="true"></i>
-                                    <span> 整租</span>
-                                </a>
-                            </dd>
-                        </dl>
+                        @*<dl class="layui-nav-child">
+                                <dd>
+                                    <a data-url="/House/ListHouses" data-icon="fa-user" data-title="整租" kit-target data-id="4">
+                                        <i class="fa fa-user" aria-hidden="true"></i>
+                                        <span> 整租</span>
+                                    </a>
+                                </dd>
+                            </dl>*@
                     </li>
                 </ul>
             </div>
@@ -96,7 +100,7 @@
         var message;
         layui.config({
             base: '/build/js/'
-        }).use(['app', 'message'], function () {
+        }).use(['app', 'message', 'layer'], function () {
             var app = layui.app,
                 $ = layui.jquery,
                 layer = layui.layer;
@@ -104,6 +108,32 @@
             app.set({
                 type: 'iframe'
             }).init();
+
+            $("#logout").click(function () {
+                $.ajax({
+                    url: '/Home/Logout',
+                    type: 'post',
+                    success: function (res) {
+                        if (res.status != 200) {
+                            layer.alert(res.message, {
+                                icon: 2,
+                                skin: 'layer-ext-moon'
+                            });
+                        }
+                        else {
+                            window.location.href = "/Home/Login";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        layer.closeAll('loading');
+                        let responseText = JSON.parse(XMLHttpRequest.responseText);
+                        layer.alert(responseText.message, {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                    }
+                });
+            });
         });
     </script>
 </body>

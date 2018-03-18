@@ -1,0 +1,241 @@
+﻿@model HouseAddViewModel
+@{
+    ViewData["Title"] = "添加房源";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="margin-left:20px;margin-right:20px;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+        <legend>添加房源</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" method="post" id="houseAddForm" action="/House/AddHouse">
+        <div class="layui-form-item">
+            <label class="layui-form-label">区域</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("regionId", new SelectList(Model.Regions, "Id", "Name"), new { lay_filter = "regionSelect" })
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">小区</label>
+            <div class="layui-input-block layui-form" lay-filter="communityFilter">
+                <select id="communityId" name="communityId"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房型</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("roomTypeId", new SelectList(Model.RoomType, "Id", "Name"))
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" autocomplete="off" placeholder="请输入地址" class="layui-input" lay-verify="required|address" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">月租金</label>
+            <div class="layui-input-block">
+                <input type="text" name="monthRent" autocomplete="off" placeholder="请输入月租金" class="layui-input" lay-verify="required|number" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("statusId", new SelectList(Model.RoomStatus, "Id", "Name"))
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">面积</label>
+            <div class="layui-input-block">
+                <input type="text" name="area" autocomplete="off" placeholder="请输入面积" class="layui-input" lay-verify="required|number" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">装修</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("decorateStatusId", new SelectList(Model.DecorateStatuses, "Id", "Name"))
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">楼层</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="floorIndex" placeholder="楼层" autocomplete="off" class="layui-input" lay-verify="required|number" />
+            </div>
+            <div class="layui-form-mid">&nbsp;</div>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="totalFloorCount" placeholder="总层" autocomplete="off" class="layui-input" lay-verify="required|number|totalFloor" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">朝向</label>
+            <div class="layui-input-block">
+                <input type="text" name="direction" autocomplete="off" placeholder="请输入朝向" class="layui-input" lay-verify="required|direction" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">预计可看房时间</label>
+            <div class="layui-input-block">
+                <input type="text" id="lookableDateTime" name="lookableDateTime" autocomplete="off" class="layui-input" lay-verify="required" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">预计可入住时间</label>
+            <div class="layui-input-block">
+                <input type="text" id="checkInDateTime" name="checkInDateTime" autocomplete="off" class="layui-input" lay-verify="required" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">业主姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="ownerName" autocomplete="off" class="layui-input" lay-verify="required|ownerName" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">业主电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="ownerPhoneNum" autocomplete="off" class="layui-input" lay-verify="required|phone" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房屋类型</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("typeId", new SelectList(Model.Types, "Id", "Name"))
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">配套设施</label>
+            <div class="layui-input-block">
+                @foreach (var item in Model.Attachments)
+                {
+                    <input type="checkbox" name="attachmentIds" value="@item.Id" title="@item.Name" lay-skin="primary" />
+                }
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房源描述</label>
+            <div class="layui-input-block">
+                <textarea name="description" id="description" lay-verify="description" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="submitBtn">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        layui.use(['form', 'layer', 'layedit', 'laydate'], function () {
+            let layform = layui.form;
+            let laydate = layui.laydate;
+            let layedit = layui.layedit;
+
+            //let frameIndex = parent.layer.getFrameIndex(window.name);
+            //layedit.build('description', {
+            //    tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right', 'face']
+            //});
+            laydate.render({
+                elem: '#lookableDateTime'
+            });
+            laydate.render({
+                elem: '#checkInDateTime'
+            });
+
+            layform.verify({
+                address: function (value) {
+                    if (value.length > 200) {
+                        return '地址不得超过200个字符！';
+                    }
+                    if (value.length < 5) {
+                        return '地址最少5个字符！';
+                    }
+                },
+                totalFloor: function (value) {
+                    let floorIndex = $("[name='floorIndex']").val();
+                    if (value < floorIndex) {
+                        return '总楼层不得小于所在楼层！';
+                    }
+                },
+                direction: function (value) {
+                    if (value.length > 10) {
+                        return '朝向不得超过10个字符！';
+                    }
+                    if (value.length < 2) {
+                        return '朝向不得小于2个字符！';
+                    }
+                },
+                ownerName: function (value) {
+                    if (value.length < 2) {
+                        return '姓名不得小于2个字符！';
+                    }
+                    if (value.length > 20) {
+                        return '姓名不得大于20个字符！';
+                    }
+                },
+                description: function (value) {
+                    if (value.length > 1000) {
+                        return '房源描述不得大于1000个字符！';
+                    }
+                    if (value.length < 0) {
+                        return '房源描述不得为空！';
+                    }
+                }
+            });
+
+            layform.on('submit(submitBtn)', function (data) {
+                let params = data.field;
+                console.log(params);
+                $.ajax({
+                    type: "post",
+                    url: "/House/AddHouse",
+                    data: params,
+                    success: function (res) {
+                        parent.parent.layer.alert('添加成功。', {
+                            icon: 1,
+                            skin: 'layer-ext-moon'
+                        });
+
+                        parent.location.reload();
+                        let index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        let responseText = JSON.parse(XMLHttpRequest.responseText);
+                        parent.parent.layer.alert(responseText.message, {
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        });
+                    }
+                });
+                return false;
+            });
+
+            layform.on('select(regionSelect)', function (data) {
+                let regionId = data.value;
+                setComSel(regionId);
+            });
+            
+            let setComSel = function (regionId) {
+                $.ajax({
+                    url: '/House/GetCommunityByRegionId',
+                    type: 'get',
+                    data: { regionId: regionId },
+                    success: function (res) {
+                        let options = '';
+                        for (var i = 0; i < res.data.length; i++) {
+                            options += `<option value="${res.data[i].id}">${res.data[i].name}</option>`;
+                        }
+                        $("#communityId").html('');
+                        $("#communityId").append(options);
+                        layform.render('select', 'communityFilter');
+                    }
+                });
+            }
+            setComSel($("#regionId").val());
+        });
+    </script>
+}
